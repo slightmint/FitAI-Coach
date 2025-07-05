@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>创建训练计划 - FitAI Coach</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" th:href="@{/}">
+                <i class="fas fa-dumbbell me-2"></i>FitAI Coach
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" th:href="@{/dashboard}">
+                    <i class="fas fa-tachometer-alt me-1"></i>仪表板
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="mb-0">
+                            <i class="fas fa-plus-circle me-2"></i>创建个性化训练计划
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <!-- 成功/错误消息 -->
+                        <div th:if="${successMessage}" class="alert alert-success" role="alert">
+                            <i class="fas fa-check-circle me-2"></i>
+                            <span th:text="${successMessage}"></span>
+                        </div>
+                        <div th:if="${errorMessage}" class="alert alert-danger" role="alert">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            <span th:text="${errorMessage}"></span>
+                        </div>
+
+                        <form th:action="@{/workout/create}" method="post">
+                            <div class="mb-4">
+                                <label class="form-label">选择训练类型：</label>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card plan-type-card" onclick="selectPlanType('strength')">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-dumbbell fa-3x text-primary mb-3"></i>
+                                                <h5>力量训练</h5>
+                                                <p class="text-muted">增强肌肉力量和耐力</p>
+                                                <input type="radio" name="planType" value="strength" class="form-check-input" style="display: none;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card plan-type-card" onclick="selectPlanType('cardio')">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-running fa-3x text-success mb-3"></i>
+                                                <h5>有氧训练</h5>
+                                                <p class="text-muted">提高心肺功能和耐力</p>
+                                                <input type="radio" name="planType" value="cardio" class="form-check-input" style="display: none;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card plan-type-card" onclick="selectPlanType('weight_loss')">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-weight fa-3x text-warning mb-3"></i>
+                                                <h5>减重训练</h5>
+                                                <p class="text-muted">燃烧脂肪，减轻体重</p>
+                                                <input type="radio" name="planType" value="weight_loss" class="form-check-input" style="display: none;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card plan-type-card" onclick="selectPlanType('muscle_gain')">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-user-plus fa-3x text-info mb-3"></i>
+                                                <h5>增肌训练</h5>
+                                                <p class="text-muted">增加肌肉量和体重</p>
+                                                <input type="radio" name="planType" value="muscle_gain" class="form-check-input" style="display: none;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-between">
+                                <a th:href="@{/dashboard}" class="btn btn-secondary">
+                                    <i class="fas fa-arrow-left me-1"></i>返回仪表板
+                                </a>
+                                <button type="submit" class="btn btn-primary" id="createBtn" disabled>
+                                    <i class="fas fa-plus me-1"></i>创建训练计划
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function selectPlanType(type) {
+            // 移除所有选中状态
+            document.querySelectorAll('.plan-type-card').forEach(card => {
+                card.classList.remove('border-primary', 'bg-light');
+            });
+            
+            // 添加选中状态
+            event.currentTarget.classList.add('border-primary', 'bg-light');
+            
+            // 设置radio按钮
+            document.querySelector(`input[value="${type}"]`).checked = true;
+            
+            // 启用创建按钮
+            document.getElementById('createBtn').disabled = false;
+        }
+    </script>
+
+    <style>
+        .plan-type-card {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .plan-type-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+    </style>
+</body>
+</html>

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>仪表板 - FitAI Coach</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" th:href="@{/}">
+                <i class="fas fa-dumbbell me-2"></i>FitAI Coach
+            </a>
+            
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" th:href="@{/user/profile}">
+                    <i class="fas fa-user me-1"></i>
+                    <span th:text="${user.username}">用户</span>
+                </a>
+                <!-- 删除用户相关链接 -->
+                <!-- <a class="nav-link" th:href="@{/user/profile}">个人资料</a> -->
+                <!-- <a class="nav-link" th:href="@{/user/logout}">退出</a> -->
+                <!-- <a th:href="@{/user/profile}" class="btn btn-outline-info">查看个人资料</a> -->
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container mt-4">
+        <!-- 欢迎信息 -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <h2 class="card-title">
+                            <i class="fas fa-hand-wave me-2"></i>
+                            欢迎回来，<span th:text="${user.username}">用户</span>！
+                        </h2>
+                        <p class="card-text">今天也要坚持训练哦！让我们一起达成健身目标。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 统计卡片 -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <i class="fas fa-weight fa-2x text-primary mb-2"></i>
+                        <h5 class="card-title">当前体重</h5>
+                        <!-- 修改第55行 -->
+                        <h3 class="text-primary" th:text="${user.weight} + 'kg'">70kg</h3>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <i class="fas fa-calculator fa-2x text-success mb-2"></i>
+                        <h5 class="card-title">BMI指数</h5>
+                        <h3 class="text-success" th:text="${#numbers.formatDecimal(bmi, 1, 1)}">22.5</h3>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <i class="fas fa-calendar-check fa-2x text-warning mb-2"></i>
+                        <h5 class="card-title">训练天数</h5>
+                        <h3 class="text-warning" th:text="${user.workoutDays} + '天'">15天</h3>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <i class="fas fa-target fa-2x text-info mb-2"></i>
+                        <h5 class="card-title">健身目标</h5>
+                        <!-- 在第85行左右，修改健身目标显示 -->
+                        <p class="text-info" th:text="${user.fitnessGoal.displayName}">减重</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 主要内容区域 -->
+        <div class="row">
+            <!-- 当前训练计划 -->
+            <div class="col-lg-8">
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-play-circle me-2"></i>当前训练计划
+                        </h5>
+                        <a th:href="@{/workout/create}" class="btn btn-primary btn-sm">
+                            <i class="fas fa-plus me-1"></i>创建新计划
+                        </a>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${activePlan.isPresent()}">
+                            <div th:with="plan=${activePlan.get()}">
+                                <h6 th:text="${plan.planName}">训练计划名称</h6>
+                                <p class="text-muted" th:text="${plan.description}">计划描述</p>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <small class="text-muted">难度级别</small>
+                                        <p th:text="${plan.difficulty}">中等</p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <small class="text-muted">持续时间</small>
+                                        <p th:text="${plan.durationMinutes} + '分钟'">30分钟</p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <small class="text-muted">训练频率</small>
+                                        <p th:text="${plan.frequency}">每周3次</p>
+                                    </div>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-success" onclick="startWorkout()">
+                                        <i class="fas fa-play me-1"></i>开始训练
+                                    </button>
+                                    <a th:href="@{'/workout/plan/' + ${plan.id}}" class="btn btn-outline-primary">
+                                        <i class="fas fa-eye me-1"></i>查看详情
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div th:unless="${activePlan.isPresent()}">
+                            <div class="text-center py-4">
+                                <i class="fas fa-plus-circle fa-3x text-muted mb-3"></i>
+                                <h6 class="text-muted">还没有活跃的训练计划</h6>
+                                <a th:href="@{/workout/create}" class="btn btn-primary">
+                                    <i class="fas fa-plus me-1"></i>创建训练计划
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 进度图表 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-chart-line me-2"></i>训练进度
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="progressChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 侧边栏 -->
+            <div class="col-lg-4">
+                <!-- 快速操作 -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-bolt me-2"></i>快速操作
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <a th:href="@{/workout/plans}" class="btn btn-outline-primary">
+                                <i class="fas fa-list me-2"></i>我的训练计划
+                            </a>
+                            <a th:href="@{/workout/exercises}" class="btn btn-outline-success">
+                                <i class="fas fa-dumbbell me-2"></i>浏览运动库
+                            </a>
+                            <a th:href="@{/user/profile}" class="btn btn-outline-info">
+                                <i class="fas fa-user-edit me-2"></i>更新个人资料
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 热门训练计划 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-fire me-2"></i>热门训练计划
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div th:each="plan : ${popularPlans}" class="mb-3">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="mb-1" th:text="${plan.planName}">计划名称</h6>
+                                    <small class="text-muted" th:text="${plan.difficulty} + ' • ' + ${plan.durationMinutes} + '分钟'">中等 • 30分钟</small>
+                                </div>
+                                <span class="badge bg-primary" th:text="${plan.planType}">类型</span>
+                            </div>
+                            <hr th:unless="${planStat.last}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script th:src="@{/frontend/js/main.js}"></script>
+    
+    <script>
+        // 初始化进度图表
+        const ctx = document.getElementById('progressChart').getContext('2d');
+        const progressChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['第1周', '第2周', '第3周', '第4周'],
+                datasets: [{
+                    label: '体重(kg)',
+                    data: [75, 74, 73, 72],
+                    borderColor: 'rgb(75, 192, 192)',
+                    tension: 0.1
+                }, {
+                    label: '训练次数',
+                    data: [3, 4, 5, 6],
+                    borderColor: 'rgb(255, 99, 132)',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: false
+                    }
+                }
+            }
+        });
+        
+        function startWorkout() {
+            alert('开始训练功能开发中...');
+        }
+    </script>
+</body>
+</html>

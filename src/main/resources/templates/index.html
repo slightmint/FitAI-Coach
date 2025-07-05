@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitAI Coach - 智能健身教练</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero-section bg-primary text-white">
+        <div class="container">
+            <div class="row align-items-center min-vh-100">
+                <div class="col-lg-6">
+                    <h1 class="display-4 fw-bold mb-4">FitAI Coach</h1>
+                    <h2 class="h3 mb-4">您的智能健身教练</h2>
+                    <p class="lead mb-4">
+                        基于AI技术的个性化健身指导平台，为您量身定制训练计划，
+                        实时监控运动状态，科学管理健身进度。
+                    </p>
+                    <!-- 删除登录注册按钮，添加直接进入按钮 -->
+                    <div class="d-flex gap-3">
+                        <a th:href="@{/dashboard}" class="btn btn-light btn-lg">
+                            <i class="fas fa-play me-2"></i>开始使用
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="text-center">
+                        <i class="fas fa-dumbbell display-1 mb-4"></i>
+                        <div class="row">
+                            <div class="col-4">
+                                <i class="fas fa-chart-line fa-3x mb-3"></i>
+                                <h5>智能分析</h5>
+                            </div>
+                            <div class="col-4">
+                                <i class="fas fa-heartbeat fa-3x mb-3"></i>
+                                <h5>健康监控</h5>
+                            </div>
+                            <div class="col-4">
+                                <i class="fas fa-trophy fa-3x mb-3"></i>
+                                <h5>成就系统</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- 功能特色 -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row text-center mb-5">
+                <div class="col-12">
+                    <h2 class="display-5 fw-bold">核心功能</h2>
+                    <p class="lead text-muted">AI驱动的智能健身解决方案</p>
+                </div>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="fas fa-brain fa-3x text-primary mb-3"></i>
+                            <h5 class="card-title">AI智能规划</h5>
+                            <p class="card-text">
+                                基于您的身体状况、健身目标和时间安排，
+                                AI算法为您制定最适合的个性化训练计划。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="fas fa-eye fa-3x text-success mb-3"></i>
+                            <h5 class="card-title">动作识别</h5>
+                            <p class="card-text">
+                                实时识别您的运动动作，提供专业的姿势纠正建议，
+                                确保训练效果最大化，避免运动伤害。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="fas fa-utensils fa-3x text-warning mb-3"></i>
+                            <h5 class="card-title">营养指导</h5>
+                            <p class="card-text">
+                                根据您的训练强度和身体需求，
+                                提供科学的营养建议和饮食计划。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="fas fa-chart-bar fa-3x text-info mb-3"></i>
+                            <h5 class="card-title">进度追踪</h5>
+                            <p class="card-text">
+                                详细记录您的训练数据，可视化展示健身进度，
+                                帮助您更好地了解自己的成长轨迹。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="fas fa-users fa-3x text-danger mb-3"></i>
+                            <h5 class="card-title">社区互动</h5>
+                            <p class="card-text">
+                                加入健身社区，与志同道合的伙伴分享经验，
+                                相互激励，共同进步。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="fas fa-medal fa-3x text-purple mb-3"></i>
+                            <h5 class="card-title">成就系统</h5>
+                            <p class="card-text">
+                                完成训练目标解锁各种成就徽章，
+                                让健身过程更有趣味性和成就感。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- CTA Section -->
+    <section class="bg-light py-5">
+        <div class="container text-center">
+            <h2 class="display-6 fw-bold mb-4">开始您的健身之旅</h2>
+            <p class="lead mb-4">加入FitAI Coach，让AI成为您的专属健身教练</p>
+            <!-- 修改按钮链接到仪表板 -->
+            <a th:href="@{/dashboard}" class="btn btn-primary btn-lg">
+                <i class="fas fa-rocket me-2"></i>免费开始
+            </a>
+        </div>
+    </section>
+    
+    <!-- 页脚 -->
+    <footer class="bg-dark text-light py-4">
+        <div class="container text-center">
+            <p class="mb-0">&copy; 2024 FitAI Coach. 智能健身，科学训练。</p>
+        </div>
+    </footer>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

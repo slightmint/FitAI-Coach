@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>运动库 - FitAI Coach</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-12">
+                <h2 class="mb-4">🏃‍♂️ 运动库</h2>
+                
+                <!-- 筛选器 -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <form method="get" th:action="@{/workout/exercises}">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label for="type" class="form-label">运动类型</label>
+                                    <select class="form-select" id="type" name="type">
+                                        <option value="">全部类型</option>
+                                        <option th:each="exerciseType : ${exerciseTypes}" 
+                                                th:value="${exerciseType}" 
+                                                th:text="${exerciseType}"
+                                                th:selected="${param.type != null and param.type[0] == exerciseType}">
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="muscle" class="form-label">目标肌群</label>
+                                    <select class="form-select" id="muscle" name="muscle">
+                                        <option value="">全部肌群</option>
+                                        <option th:each="muscleGroup : ${muscleGroups}" 
+                                                th:value="${muscleGroup}" 
+                                                th:text="${muscleGroup}"
+                                                th:selected="${param.muscle != null and param.muscle[0] == muscleGroup}">
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 d-flex align-items-end">
+                                    <button type="submit" class="btn btn-primary me-2">筛选</button>
+                                    <a th:href="@{/workout/exercises}" class="btn btn-outline-secondary">重置</a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- 运动列表 -->
+                <div class="row">
+                    <div class="col-md-6 col-lg-4 mb-4" th:each="exercise : ${exercises}">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title" th:text="${exercise.name}">运动名称</h5>
+                                <p class="card-text" th:text="${exercise.description}">运动描述</p>
+                                
+                                <div class="mb-2">
+                                    <span class="badge bg-primary" th:text="${exercise.category}">类型</span>
+                                    <span class="badge bg-secondary" th:text="${exercise.difficultyLevel}">难度</span>
+                                </div>
+                                
+                                <div class="small text-muted">
+                                    <div th:if="${exercise.primaryMuscleGroup}">
+                                        <strong>主要肌群：</strong>
+                                        <span th:text="${exercise.primaryMuscleGroup.displayName}">主要肌群</span>
+                                    </div>
+                                    <div th:if="${exercise.secondaryMuscleGroups != null and !exercise.secondaryMuscleGroups.isEmpty()}">
+                                        <strong>次要肌群：</strong>
+                                        <span th:each="muscle,iterStat : ${exercise.secondaryMuscleGroups}">
+                                            <span th:text="${muscle.displayName}">次要肌群</span>
+                                            <span th:if="${!iterStat.last}">, </span>
+                                        </span>
+                                    </div>
+                                    <div th:if="${exercise.equipmentNeeded}">
+                                        <strong>所需器械：</strong>
+                                        <span th:text="${exercise.equipmentNeeded.displayName}">器械</span>
+                                    </div>
+                                    <div th:if="${exercise.caloriesPerMinute}">
+                                        <strong>消耗热量：</strong>
+                                        <span th:text="${exercise.caloriesPerMinute}">0</span> 卡/分钟
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <button class="btn btn-sm btn-outline-primary" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#exerciseModal"
+                                        th:data-exercise-id="${exercise.id}"
+                                        th:data-exercise-name="${exercise.name}"
+                                        th:data-exercise-description="${exercise.description}"
+                                        th:data-exercise-instructions="${exercise.instructions}">
+                                    查看详情
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 如果没有运动数据 -->
+                <div th:if="${exercises == null or exercises.isEmpty()}" class="text-center py-5">
+                    <div class="text-muted">
+                        <i class="fas fa-dumbbell fa-3x mb-3"></i>
+                        <h4>暂无运动数据</h4>
+                        <p>请尝试调整筛选条件或联系管理员添加运动数据。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 运动详情模态框 -->
+    <div class="modal fade" id="exerciseModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exerciseModalLabel">运动详情</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <h6>运动描述</h6>
+                    <p id="modalDescription"></p>
+                    
+                    <h6>动作要领</h6>
+                    <div id="modalInstructions"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 处理运动详情模态框
+        document.addEventListener('DOMContentLoaded', function() {
+            const exerciseModal = document.getElementById('exerciseModal');
+            exerciseModal.addEventListener('show.bs.modal', function(event) {
+                const button = event.relatedTarget;
+                const exerciseName = button.getAttribute('data-exercise-name');
+                const exerciseDescription = button.getAttribute('data-exercise-description');
+                const exerciseInstructions = button.getAttribute('data-exercise-instructions');
+                
+                const modalTitle = exerciseModal.querySelector('.modal-title');
+                const modalDescription = exerciseModal.querySelector('#modalDescription');
+                const modalInstructions = exerciseModal.querySelector('#modalInstructions');
+                
+                modalTitle.textContent = exerciseName;
+                modalDescription.textContent = exerciseDescription || '暂无描述';
+                modalInstructions.innerHTML = exerciseInstructions ? exerciseInstructions.replace(/\n/g, '<br>') : '暂无详细说明';
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的训练计划 - FitAI Coach</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-12">
+                <h1 class="mb-4">
+                    <i class="fas fa-dumbbell me-2"></i>我的训练计划
+                </h1>
+                
+                <!-- 当前活跃计划 -->
+                <div th:if="${activePlan}" class="card mb-4 border-primary">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-star me-2"></i>当前活跃计划
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <h6 class="card-title" th:text="${activePlan.name}">计划名称</h6>
+                        <p class="card-text" th:text="${activePlan.description}">计划描述</p>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <small class="text-muted">训练类型:</small><br>
+                                <span class="badge bg-info" th:text="${activePlan.planType}">STRENGTH</span>
+                            </div>
+                            <div class="col-md-3">
+                                <small class="text-muted">难度级别:</small><br>
+                                <span class="badge bg-warning" th:text="${activePlan.difficultyLevel}">BEGINNER</span>
+                            </div>
+                            <div class="col-md-3">
+                                <small class="text-muted">持续时间:</small><br>
+                                <span th:text="${activePlan.durationWeeks} + ' 周'">4 周</span>
+                            </div>
+                            <div class="col-md-3">
+                                <small class="text-muted">每周频率:</small><br>
+                                <span th:text="${activePlan.sessionsPerWeek} + ' 次/周'">3 次/周</span>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <a th:href="@{'/workout/plan/' + ${activePlan.id}}" class="btn btn-primary">
+                                <i class="fas fa-eye me-2"></i>查看详情
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 所有训练计划 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-list me-2"></i>所有训练计划
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${#lists.isEmpty(workoutPlans)}" class="text-center py-4">
+                            <i class="fas fa-plus-circle fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">还没有训练计划，开始创建您的第一个计划吧！</p>
+                            <a th:href="@{/workout/create}" class="btn btn-primary">
+                                <i class="fas fa-plus me-2"></i>创建训练计划
+                            </a>
+                        </div>
+                        
+                        <div th:if="${!#lists.isEmpty(workoutPlans)}" class="row">
+                            <div th:each="plan : ${workoutPlans}" class="col-md-6 col-lg-4 mb-3">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <h6 class="card-title" th:text="${plan.name}">计划名称</h6>
+                                        <p class="card-text" th:text="${plan.description}">计划描述</p>
+                                        <div class="mb-2">
+                                            <span class="badge bg-secondary me-1" th:text="${plan.planType}">类型</span>
+                                            <span class="badge bg-info" th:text="${plan.difficultyLevel}">难度</span>
+                                        </div>
+                                        <small class="text-muted">
+                                            创建时间: <span th:text="${#temporals.format(plan.createdAt, 'yyyy-MM-dd')}">2024-01-01</span>
+                                        </small>
+                                    </div>
+                                    <div class="card-footer">
+                                        <a th:href="@{'/workout/plan/' + ${plan.id}}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye me-1"></i>查看
+                                        </a>
+                                        <button th:if="${activePlan != null and plan.id != activePlan.id}" 
+                                                class="btn btn-sm btn-success ms-2"
+                                                th:onclick="'activatePlan(' + ${plan.id} + ')'">
+                                            <i class="fas fa-play me-1"></i>激活
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div th:if="${!#lists.isEmpty(workoutPlans)}" class="text-center mt-4">
+                            <a th:href="@{/workout/create}" class="btn btn-primary">
+                                <i class="fas fa-plus me-2"></i>创建新计划
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function activatePlan(planId) {
+            // 这里可以添加激活计划的AJAX请求
+            console.log('激活计划 ID:', planId);
+            // 实际实现时需要发送POST请求到后端
+        }
+    </script>
+</body>
+</html>

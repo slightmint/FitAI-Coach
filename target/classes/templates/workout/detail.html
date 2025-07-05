@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: layout(~{::title}, ~{::main})}">
+<head>
+    <title>训练计划详情 - FitAI Coach</title>
+</head>
+<body>
+    <main>
+        <div class="row">
+            <div class="col-md-8">
+                <!-- 训练计划基本信息 -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h3 th:text="${plan.name}">训练计划名称</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>计划类型：</strong> <span th:text="${plan.planType}">力量训练</span></p>
+                                <p><strong>难度等级：</strong> <span th:text="${plan.difficulty}">中级</span></p>
+                                <p><strong>持续周数：</strong> <span th:text="${plan.durationWeeks}">8</span> 周</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>每周频率：</strong> <span th:text="${plan.sessionsPerWeek}">3</span> 次/周</p>
+                                <p><strong>单次时长：</strong> <span th:text="${plan.sessionDuration}">60</span> 分钟</p>
+                                <p><strong>状态：</strong> 
+                                    <span th:if="${plan.active}" class="badge bg-success">已激活</span>
+                                    <span th:unless="${plan.active}" class="badge bg-secondary">未激活</span>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <p><strong>计划描述：</strong></p>
+                            <p th:text="${plan.description}">这是一个专为初学者设计的力量训练计划...</p>
+                        </div>
+                        
+                        <!-- 操作按钮 -->
+                        <div class="mt-3">
+                            <form th:if="${!plan.active}" th:action="@{/workout/activate/{id}(id=${plan.id})}" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fas fa-play"></i> 激活计划
+                                </button>
+                            </form>
+                            <button th:if="${plan.active}" class="btn btn-primary" onclick="startWorkout()">
+                                <i class="fas fa-dumbbell"></i> 开始训练
+                            </button>
+                            <a th:href="@{/workout/plans}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left"></i> 返回列表
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 训练内容 -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h4>训练内容</h4>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${plan.workoutExercises != null and !plan.workoutExercises.isEmpty()}">
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>运动名称</th>
+                                            <th>目标肌群</th>
+                                            <th>组数</th>
+                                            <th>次数/时长</th>
+                                            <th>休息时间</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="workoutExercise : ${plan.workoutExercises}">
+                                            <td th:text="${workoutExercise.exercise.name}">俯卧撑</td>
+                                            <td th:text="${workoutExercise.exercise.muscleGroup.displayName}">胸部</td>
+                                            <td th:text="${workoutExercise.sets}">3</td>
+                                            <td>
+                                                <span th:if="${workoutExercise.reps > 0}" th:text="${workoutExercise.reps} + ' 次'">12 次</span>
+                                                <span th:if="${workoutExercise.duration > 0}" th:text="${workoutExercise.duration} + ' 秒'">30 秒</span>
+                                            </td>
+                                            <td th:text="${workoutExercise.restTime} + ' 秒'">60 秒</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div th:if="${plan.workoutExercises == null or plan.workoutExercises.isEmpty()}" class="text-center text-muted">
+                            <p>暂无训练内容</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧边栏 -->
+            <div class="col-md-4">
+                <!-- AI智能建议 -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h4><i class="fas fa-robot"></i> AI智能建议</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <button id="getAIAdvice" class="btn btn-primary">
+                                <i class="fas fa-lightbulb"></i> 获取AI训练建议
+                            </button>
+                            <button id="getNutritionAdvice" class="btn btn-info">
+                                <i class="fas fa-apple-alt"></i> 获取营养建议
+                            </button>
+                        </div>
+                        <div id="aiAdviceContent" class="mt-3" style="display: none;">
+                            <div class="alert alert-info">
+                                <div id="adviceText"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 训练统计 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h4><i class="fas fa-chart-bar"></i> 训练统计</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row text-center">
+                            <div class="col-6">
+                                <div class="border-end">
+                                    <h5 class="text-primary" th:text="${plan.workoutExercises != null ? plan.workoutExercises.size() : 0}">0</h5>
+                                    <small class="text-muted">运动项目</small>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <h5 class="text-success" th:text="${plan.sessionDuration}">60</h5>
+                                <small class="text-muted">分钟/次</small>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row text-center">
+                            <div class="col-6">
+                                <div class="border-end">
+                                    <h5 class="text-warning" th:text="${plan.sessionsPerWeek}">3</h5>
+                                    <small class="text-muted">次/周</small>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <h5 class="text-info" th:text="${plan.durationWeeks}">8</h5>
+                                <small class="text-muted">总周数</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- JavaScript -->
+        <script th:inline="javascript">
+        // AI建议功能
+        document.getElementById('getAIAdvice').addEventListener('click', function() {
+            const planId = /*[[${plan.id}]]*/ 0;
+            const button = this;
+            button.disabled = true;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 获取中...';
+            
+            fetch(`/workout/ai-advice/${planId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        document.getElementById('adviceText').innerHTML = data.advice;
+                        document.getElementById('aiAdviceContent').style.display = 'block';
+                    } else {
+                        alert('获取AI建议失败：' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('网络错误，请稍后重试');
+                })
+                .finally(() => {
+                    button.disabled = false;
+                    button.innerHTML = '<i class="fas fa-lightbulb"></i> 获取AI训练建议';
+                });
+        });
+
+        document.getElementById('getNutritionAdvice').addEventListener('click', function() {
+            const button = this;
+            button.disabled = true;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 获取中...';
+            
+            fetch('/workout/ai-nutrition')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        document.getElementById('adviceText').innerHTML = data.advice;
+                        document.getElementById('aiAdviceContent').style.display = 'block';
+                    } else {
+                        alert('获取营养建议失败：' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('网络错误，请稍后重试');
+                })
+                .finally(() => {
+                    button.disabled = false;
+                    button.innerHTML = '<i class="fas fa-apple-alt"></i> 获取营养建议';
+                });
+        });
+
+        // 开始训练功能
+        function startWorkout() {
+            const planId = /*[[${plan.id}]]*/ 0;
+            // 这里可以添加开始训练的逻辑
+            alert('训练功能开发中...');
+        }
+        </script>
+    </main>
+</body>
+</html>

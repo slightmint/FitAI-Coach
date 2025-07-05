@@ -1,0 +1,86 @@
+spring:
+
+
+
+  application:
+    name: fitai-coach
+  datasource:
+    url: jdbc:mysql://localhost:3306/fitai_coach?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&useLocalSessionState=true&rewriteBatchedStatements=true
+    username: root
+    password: "0530"  # ⚠️必须加引号！
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  
+  # JPA配置
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect  # 更新方言
+        format_sql: true
+  
+  # Thymeleaf配置
+  thymeleaf:
+    cache: false
+    prefix: classpath:/templates/
+    suffix: .html
+    encoding: UTF-8
+    mode: HTML
+  
+  # 静态资源配置
+  web:
+    resources:
+      static-locations: classpath:/static/,classpath:/frontend/
+  
+  # 开发工具配置
+  devtools:
+    restart:
+      enabled: true
+    livereload:
+      enabled: true
+
+# 服务器配置
+server:
+  port: 8080
+  servlet:
+    context-path: /
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+
+# 日志配置
+logging:
+  level:
+    com.fitai: DEBUG
+    org.springframework.web: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/fitai-coach.log
+
+# 应用自定义配置
+fitai:
+  coach:
+    version: 1.0.0
+    ai:
+      model: gpt-3.5-turbo
+      api-key: your-api-key-here
+    fitness:
+      default-workout-duration: 60
+      max-daily-workouts: 3
+
+
+# AI服务配置
+ai:
+  api:
+    key: sk-57k5vWkRMQYiOvTpeE2nLF3v266OhKtBjs0ga7z9b8Wg0q2b
+    base-url: https://api.moonshot.cn  # 根据你的AI服务提供商调整
+    model: moonshot-v1-8k  # 或其他模型
+    timeout: 30000  # 超时时间（毫秒）
+    max-tokens: 1000
